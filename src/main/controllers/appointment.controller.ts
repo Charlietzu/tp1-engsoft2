@@ -48,14 +48,14 @@ export default class AppointmentController {
     return res.status(200).send(result);
   }
 
-  private async hasConflictingAppointment(
+  private async getAppointmentsWithSameDoctorAndTime(
     appointment: Appointment,
     appointmentModel: AppointmentModel
   ) {
     const appointments: Appointment[] =
       await appointmentModel.retrieveAppointments();
 
-    return appointments.some(
+    return appointments.filter(
       (a) =>
         a.timestamp.toISOString() === appointment.timestamp &&
         a.doctor_id === appointment.doctor_id
@@ -72,12 +72,10 @@ export default class AppointmentController {
 
     const appointmentModel = new AppointmentModel();
 
-    const hasConflictingAppointment = await this.hasConflictingAppointment(
-      body,
-      appointmentModel
-    );
+    const conflitctingAppointments =
+      await this.getAppointmentsWithSameDoctorAndTime(body, appointmentModel);
 
-    if (hasConflictingAppointment)
+    if (conflitctingAppointments.length)
       return res.status(400).send("Double appointment for doctor");
 
     const result = await appointmentModel.createAppointment(body);
