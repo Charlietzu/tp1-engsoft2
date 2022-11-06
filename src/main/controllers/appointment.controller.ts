@@ -43,16 +43,18 @@ export default class AppointmentController {
 
     const result = await new AppointmentModel().retrievePatientAppointments(id);
 
-    if (!result || result?.length === 0) return res.status(404).send(null);
+    if (result?.length === 0) return res.status(404).send(null);
 
     return res.status(200).send(result);
   }
 
   private async getAppointmentsWithSameDoctorAndTime(
-    doctorId: number,
-    timestamp: Date,
+    doctorId: number | undefined,
+    timestamp: Date | undefined,
     appointmentModel: AppointmentModel
   ) {
+    if (!doctorId || !timestamp) return [];
+
     const appointments: Appointment[] =
       await appointmentModel.retrieveAppointments();
 
@@ -100,8 +102,7 @@ export default class AppointmentController {
     const { id } = req.params;
     const body = req.body;
 
-    if (!id || !body || !body?.doctor_id || !body?.timestamp)
-      return res.status(400).send(null);
+    if (!id || !body) return res.status(400).send(null);
 
     const appointmentModel = new AppointmentModel();
 
