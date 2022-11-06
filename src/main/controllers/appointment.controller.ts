@@ -49,16 +49,15 @@ export default class AppointmentController {
   }
 
   private async getAppointmentsWithSameDoctorAndTime(
-    appointment: Appointment,
+    doctorId: number,
+    timestamp: Date,
     appointmentModel: AppointmentModel
   ) {
     const appointments: Appointment[] =
       await appointmentModel.retrieveAppointments();
 
     return appointments.filter(
-      (a) =>
-        a.timestamp.toISOString() === appointment.timestamp &&
-        a.doctor_id === appointment.doctor_id
+      (a) => a.timestamp.toISOString() === timestamp && a.doctor_id === doctorId
     );
   }
 
@@ -73,7 +72,11 @@ export default class AppointmentController {
     const appointmentModel = new AppointmentModel();
 
     const conflitctingAppointments =
-      await this.getAppointmentsWithSameDoctorAndTime(body, appointmentModel);
+      await this.getAppointmentsWithSameDoctorAndTime(
+        body.doctor_id,
+        body.timestamp,
+        appointmentModel
+      );
 
     if (conflitctingAppointments.length)
       return res.status(400).send("Double appointment for doctor");
@@ -107,6 +110,9 @@ export default class AppointmentController {
         appointment.timestamp === body.timestamp &&
         appointment.doctor_id === body.doctor_id
     );
+
+    const conflitctingAppointments =
+        await this.getAppointmentsWithSameDoctorAndTime(body, appointmentModel);
 
     if (sameDoctorAndTime.some((appointment) => appointment.id !== id))
       return res.status(400).send("Double appointment for doctor");
