@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  role         Role          @default(PATIENT)
+  name         String
+  patient      Patient?
+  doctor       Doctor?
+  receptionist Receptionist?
+}
+
+model Doctor {
+  id            Int           @id @default(autoincrement())
+  name          String
+  crm           String
+  speciality    String
+  exam          Exam[]
+  appointment   Appointment[]
+  user_relation User          @relation(fields: [user_id], references: [id])
+  user_id       Int           @unique
+}
+
+model Patient {
+  id            Int           @id @default(autoincrement())
+  name          String
+  cpf           String
+  exam          Exam[]
+  appointment   Appointment[]
+  user_relation User          @relation(fields: [user_id], references: [id])
+  user_id       Int           @unique
+}
+
+model Receptionist {
+  id            Int           @id @default(autoincrement())
+  name          String
+  cpf           String
+  exam          Exam[]
+  appointment   Appointment[]
+  user_relation User          @relation(fields: [user_id], references: [id])
+  user_id       Int           @unique
+}
+
+model Exam {
+  id              Int          @id @default(autoincrement())
+  created_at      DateTime     @default(now())
+  requested_by    Doctor       @relation(fields: [doctor_id], references: [id])
+  doctor_id       Int
+  exam_for        Patient      @relation(fields: [patient_id], references: [id])
+  patient_id      Int
+  result          String?
+  created_by      Receptionist @relation(fields: [receptionist_id], references: [id])
+  receptionist_id Int
+}
+
+model Appointment {
+  id              Int          @id @default(autoincrement())
+  created_at      DateTime     @default(now())
+  doctor          Doctor       @relation(fields: [doctor_id], references: [id])
+  doctor_id       Int
+  appointment_for Patient      @relation(fields: [patient_id], references: [id])
+  patient_id      Int
+  timestamp       DateTime
+  content         String?
+  created_by      Receptionist @relation(fields: [receptionist_id], references: [id])
+  receptionist_id Int
+}
+
+enum Role {
+  DOCTOR
+  PATIENT
+  RECEPTIONIST
+}
