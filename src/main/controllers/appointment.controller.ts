@@ -48,7 +48,7 @@ export default class AppointmentController {
     return res.status(200).send(result);
   }
 
-  private async getAppointmentsWithSameDoctorAndTime(
+  static async getAppointmentsWithSameDoctorAndTime(
     doctorId: number | undefined,
     timestamp: Date | undefined,
     appointmentModel: AppointmentModel
@@ -74,7 +74,7 @@ export default class AppointmentController {
     const appointmentModel = new AppointmentModel();
 
     const conflitctingAppointments =
-      await this.getAppointmentsWithSameDoctorAndTime(
+      await AppointmentController.getAppointmentsWithSameDoctorAndTime(
         body.doctor_id,
         body.timestamp,
         appointmentModel
@@ -107,7 +107,7 @@ export default class AppointmentController {
     const appointmentModel = new AppointmentModel();
 
     const conflitctingAppointments =
-      await this.getAppointmentsWithSameDoctorAndTime(
+      await AppointmentController.getAppointmentsWithSameDoctorAndTime(
         body.doctor_id,
         body.timestamp,
         appointmentModel
