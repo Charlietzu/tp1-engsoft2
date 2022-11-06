@@ -100,21 +100,19 @@ export default class AppointmentController {
     const { id } = req.params;
     const body = req.body;
 
-    if (!id || !body) return res.status(400).send(null);
+    if (!id || !body || !body?.doctor_id || !body?.timestamp)
+      return res.status(400).send(null);
 
     const appointmentModel = new AppointmentModel();
-    const appointments: Appointment[] =
-      await appointmentModel.retrieveAppointments();
-    const sameDoctorAndTime = appointments.filter(
-      (appointment) =>
-        appointment.timestamp === body.timestamp &&
-        appointment.doctor_id === body.doctor_id
-    );
 
     const conflitctingAppointments =
-        await this.getAppointmentsWithSameDoctorAndTime(body, appointmentModel);
+      await this.getAppointmentsWithSameDoctorAndTime(
+        body.doctor_id,
+        body.timestamp,
+        appointmentModel
+      );
 
-    if (sameDoctorAndTime.some((appointment) => appointment.id !== id))
+    if (conflitctingAppointments.some((appointment) => appointment.id !== id))
       return res.status(400).send("Double appointment for doctor");
 
     const result = await appointmentModel.editAppointment(id, body);
