@@ -55,5 +55,5 @@ it('should delete appointment ', async () => {
 
     await doctorModel.deleteDoctor(idToDelete)
 
-    expect(doctorModel.retrieveDoctorById(idToDelete)).toBeUndefined()
+    expect(doctorModel.retrieveDoctorById(idToDelete)).toBeNull()
 })
