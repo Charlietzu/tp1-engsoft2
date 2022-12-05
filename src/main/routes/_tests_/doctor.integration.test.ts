@@ -21,7 +21,7 @@ afterAll(async () => {
     await prisma.$disconnect()
 })
 
-it('should create 1 new appointment', async () => {
+it('should create 1 new doctor', async () => {
     const doctorModel = new DoctorModel();
     const doctor: Doctor = {
         id: 1,
@@ -34,26 +34,4 @@ it('should create 1 new appointment', async () => {
     await doctorModel.createDoctor(doctor)
 
     expect(doctorModel.retrieveDoctorById(1)).not.toBeNull()
-})
-
-
-it('should delete appointment ', async () => {
-    const doctorModel = new DoctorModel();
-    let idToDelete = 1
-
-    const doctor: Doctor = {
-        id: idToDelete,
-        name: "Caio César",
-        crm: "22222",
-        speciality: "Pediatra",
-        user_id: 1,
-    }
-
-    await doctorModel.createDoctor(doctor)
-
-    console.log(doctor.id)
-
-    await doctorModel.deleteDoctor(idToDelete)
-
-    expect(doctorModel.retrieveDoctorById(idToDelete)).toBeNull()
 })

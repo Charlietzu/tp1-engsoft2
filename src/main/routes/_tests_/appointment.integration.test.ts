@@ -60,26 +60,3 @@ it('should find appointment by id', async () => {
 
     expect(retrievedAppointment).not.toBeNull()
 })
-
-it('should delete appointment ', async () => {
-    const appointmentModel = new AppointmentModel();
-    let idToDelete = 1
-
-    const appointment: Appointment = {
-        id: idToDelete,
-        created_at: new Date(),
-        timestamp: new Date(),
-        doctor_id: 1,
-        patient_id: 1,
-        receptionist_id: 1,
-        content: "Consulta do Daniel",
-    }
-
-    await appointmentModel.createAppointment(appointment)
-
-    console.log(appointment.id)
-
-    await appointmentModel.deleteAppointment(idToDelete)
-
-    expect(appointmentModel.retrieveAppointmentById(idToDelete)).toBeUndefined()
-})
