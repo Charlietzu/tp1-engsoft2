@@ -1,7 +1,7 @@
 import app from "../../app";
-import prisma from '../src/client';
 import { Doctor } from '@prisma/client';
-import { createDoctor, deleteDoctor } from '../../models/doctor.model';
+import DoctorModel from '../../models/doctor.model';
+import prisma from '../../../database/client';
 
 beforeAll(async () => {
     await prisma.doctor.createMany({
@@ -18,16 +18,11 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-    const doctors = prisma.doctor.deleteMany()
-
-    await prisma.$transaction9[
-        doctors
-    ]
-
     await prisma.$disconnect()
 })
 
 it('should create 1 new appointment', async () => {
+    const doctorModel = new DoctorModel();
     const doctor: Doctor = {
         id: 1,
         name: "Caio César",
@@ -36,7 +31,7 @@ it('should create 1 new appointment', async () => {
         user_id: 1,
     }
 
-    await createDoctor(doctor)
+    await doctorModel.createDoctor(doctor)
 
     const newDoctor = await prisma.doctor.findUnique({
         where: {
@@ -49,6 +44,7 @@ it('should create 1 new appointment', async () => {
 
 
 it('should delete appointment ', async () => {
+    const doctorModel = new DoctorModel();
     let idToDelete = 1
 
     const doctor: Doctor = {
@@ -59,11 +55,11 @@ it('should delete appointment ', async () => {
         user_id: 1,
     }
 
-    await createDoctor(doctor)
+    await doctorModel.createDoctor(doctor)
 
     console.log(doctor.id)
 
-    await deleteDoctor(idToDelete)
+    await doctorModel.deleteDoctor(idToDelete)
 
     expect(doctor).not.toHaveProperty('id', 1)
 })

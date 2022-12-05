@@ -1,10 +1,7 @@
-import { request } from "supertest";
-import Knex from "knex";
-import { Model } from "objection";
-import { createAppointment, retrieveAppointmentById, deleteAppointment } from '../../models/appointment.model';
 import app from "../../app";
-import prisma from '../src/client';
 import { Appointment } from '@prisma/client';
+import prisma from '../../../database/client';
+import AppointmentModel from '../../models/appointment.model';
 
 beforeAll(async () => {
     await prisma.appointment.createMany({
@@ -23,16 +20,11 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-    const appointments = prisma.appointment.deleteMany()
-
-    await prisma.$transaction9[
-        appointments
-    ]
-
     await prisma.$disconnect()
 })
 
 it('should create 1 new appointment', async () => {
+    const appointmentModel = new AppointmentModel();
     const appointment: Appointment = {
         id: 1,
         created_at: new Date(),
@@ -43,7 +35,7 @@ it('should create 1 new appointment', async () => {
         content: "Consulta do Daniel",
     }
 
-    await createAppointment(appointment)
+    await appointmentModel.createAppointment(appointment)
 
     const newAppointment = await prisma.appointment.findUnique({
         where: {
@@ -55,6 +47,7 @@ it('should create 1 new appointment', async () => {
 })
 
 it('should find appointment by id', async () => {
+    const appointmentModel = new AppointmentModel();
     let idTofind = 1
 
     const appointment: Appointment = {
@@ -67,14 +60,15 @@ it('should find appointment by id', async () => {
         content: "Consulta do Daniel",
     }
 
-    await createAppointment(appointment)
+    await appointmentModel.createAppointment(appointment)
 
-    let retrievedAppointment = await retrieveAppointmentById(idTofind)
+    let retrievedAppointment = await appointmentModel.retrieveAppointmentById(idTofind)
 
-    expect(retrievedAppointment.id).toEqual(idTofind)
+    expect(retrievedAppointment).not.toBeNull()
 })
 
 it('should delete appointment ', async () => {
+    const appointmentModel = new AppointmentModel();
     let idToDelete = 1
 
     const appointment: Appointment = {
@@ -87,11 +81,11 @@ it('should delete appointment ', async () => {
         content: "Consulta do Daniel",
     }
 
-    await createAppointment(appointment)
+    await appointmentModel.createAppointment(appointment)
 
     console.log(appointment.id)
 
-    await deleteAppointment(idToDelete)
+    await appointmentModel.deleteAppointment(idToDelete)
 
     expect(appointment).not.toHaveProperty('id', 1)
 })
