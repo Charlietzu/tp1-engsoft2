@@ -33,13 +33,7 @@ it('should create 1 new appointment', async () => {
 
     await doctorModel.createDoctor(doctor)
 
-    const newDoctor = await prisma.doctor.findUnique({
-        where: {
-            id: doctor.id,
-        }
-    })
-
-    expect(newDoctor).toEqual(doctor)
+    expect(doctorModel.retrieveDoctorById(1)).toEqual(doctor)
 })
 
 
@@ -61,5 +55,5 @@ it('should delete appointment ', async () => {
 
     await doctorModel.deleteDoctor(idToDelete)
 
-    expect(doctor).not.toHaveProperty('id', 1)
+    expect(doctor).toBeUndefined()
 })
