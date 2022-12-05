@@ -33,7 +33,7 @@ it('should create 1 new appointment', async () => {
 
     await doctorModel.createDoctor(doctor)
 
-    expect(doctorModel.retrieveDoctorById(1)).toEqual(doctor)
+    expect(doctorModel.retrieveDoctorById(1)).not.toBeNull()
 })
 
 
@@ -55,5 +55,5 @@ it('should delete appointment ', async () => {
 
     await doctorModel.deleteDoctor(idToDelete)
 
-    expect(doctor).toBeUndefined()
+    expect(doctorModel.retrieveDoctorById(idToDelete)).toBeUndefined()
 })
